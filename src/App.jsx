@@ -230,7 +230,7 @@ const App = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search... (Press / to focus)"
-                className="relative w-full bg-white/5 border border-white/10 backdrop-blur-xl rounded-full py-4 px-16 text-center text-xl focus:outline-none focus:bg-white/10 focus:border-white/20 transition-all placeholder-white/20 shadow-2xl text-white"
+                className="relative w-full bg-white/10 border border-white/15 backdrop-blur-xl rounded-full py-4 px-16 text-center text-xl focus:outline-none focus:bg-white/15 focus:border-white/25 transition-all placeholder-white/30 shadow-2xl text-white"
               />
               <button
                 type="button"
@@ -251,7 +251,7 @@ const App = () => {
                   placeholder="What is your main focus?" className="bg-transparent border-b border-white/10 text-center text-xl py-2 w-full focus:outline-none focus:border-white/50 transition-all placeholder-white/20 animate-fade-in" />
               ) : (
                 <div className={`glass-panel p-1 rounded-2xl animate-pop-in ${goal.completed ? 'opacity-50 grayscale' : ''}`}>
-                  <div className="bg-white/5 rounded-xl px-6 py-4 flex items-center gap-4">
+                  <div className="bg-white/10 rounded-xl px-6 py-4 flex items-center gap-4">
                     <button onClick={() => setGoal({ ...goal, completed: !goal.completed })} className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${goal.completed ? 'bg-emerald-500 border-emerald-500' : 'border-white/30 hover:border-white'}`}>{goal.completed && <Check size={14} />}</button>
                     <span className={`flex-1 text-lg font-medium ${goal.completed ? 'line-through text-white/40' : ''}`}>{goal.text}</span>
                     <button onClick={() => setGoal(null)} className="text-white/20 hover:text-white"><X size={18} /></button>
@@ -283,14 +283,14 @@ const App = () => {
         {/* --- STYLES --- */}
         <style>{`
         .glass-panel {
-          background: rgba(10, 10, 10, 0.75);
+          background: rgba(10, 10, 10, 0.5);
           backdrop-filter: blur(24px);
           -webkit-backdrop-filter: blur(24px);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
           color: rgba(255, 255, 255, 0.95);
         }
-        .btn-icon { @apply p-3 rounded-full bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all border border-white/5 hover:scale-105; }
+        .btn-icon { @apply p-3 rounded-full bg-white/10 hover:bg-white/15 text-white/60 hover:text-white transition-all border border-white/10 hover:scale-105; }
         .settings-header { @apply text-xs font-bold uppercase tracking-widest text-white/40 mb-3 flex items-center gap-2; }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
