@@ -252,7 +252,7 @@ const App = () => {
               ) : (
                 <div className={`glass-panel p-1 rounded-2xl animate-pop-in ${goal.completed ? 'opacity-50 grayscale' : ''}`}>
                   <div className="bg-white/10 rounded-xl px-6 py-4 flex items-center gap-4">
-                    <button onClick={() => setGoal({ ...goal, completed: !goal.completed })} className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${goal.completed ? 'bg-emerald-500 border-emerald-500' : 'border-white/30 hover:border-white'}`}>{goal.completed && <Check size={14} />}</button>
+                    <button onClick={() => setGoal({ ...goal, completed: !goal.completed })} className={` w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${goal.completed ? 'bg-emerald-500 border-emerald-500' : 'border-white/30 hover:border-white'}`}>{goal.completed && <Check size={14} />}</button>
                     <span className={`flex-1 text-lg font-medium ${goal.completed ? 'line-through text-white/40' : ''}`}>{goal.text}</span>
                     <button onClick={() => setGoal(null)} className="text-white/20 hover:text-white"><X size={18} /></button>
                   </div>
