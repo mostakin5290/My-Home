@@ -9,6 +9,7 @@ import SoundPlayer from './components/SoundPlayer';
 import NotesWidget from './components/NotesWidget';
 import SettingsModal from './components/SettingsModal';
 import QuickLinks from './components/QuickLinks';
+import ParticleBackground from './components/ParticleBackground';
 
 // Hooks & Utils
 import { useStickyState } from './hooks/useStickyState';
@@ -180,7 +181,7 @@ const App = () => {
     }
   };
 
-  // Background styles
+  // Background styles for static image or color
   const backgroundStyles = useMemo(() => {
     const base = {
       transition: 'background-image 0.4s ease-in-out, background-color 0.4s ease-in-out',
@@ -188,13 +189,16 @@ const App = () => {
     if (config.wallpaperType === 'color') {
       return { ...base, backgroundColor: config.wallpaper || '#0a0a0a' };
     }
-    const bgUrl = config.wallpaper || WALLPAPERS.mountains;
-    return {
-      ...base,
-      backgroundImage: `url(${bgUrl})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center'
-    };
+    if (config.wallpaperType === 'image') {
+      const bgUrl = config.wallpaper || WALLPAPERS.sequoiaDark;
+      return {
+        ...base,
+        backgroundImage: `url(${bgUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      };
+    }
+    return { ...base, backgroundColor: '#0a0a0c' };
   }, [config.wallpaper, config.wallpaperType]);
 
   const accentGradient = useMemo(() => ACCENTS[config.accent] || ACCENTS.blue, [config.accent]);
@@ -209,7 +213,27 @@ const App = () => {
       <div className="relative h-screen w-screen overflow-hidden text-white font-sans selection:bg-white/30 select-none">
 
         {/* 1. BACKGROUND LAYERS */}
-        <div className="absolute inset-0 z-0" style={backgroundStyles}></div>
+        {config.wallpaperType === 'image' || config.wallpaperType === 'color' ? (
+          <div className="absolute inset-0 z-0" style={backgroundStyles}></div>
+        ) : null}
+
+        {/* Live Video Wallpaper */}
+        {config.wallpaperType === 'video' || config.wallpaperType === 'live' ? (
+          <video
+            key={config.wallpaper}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 z-0 w-full h-full object-cover pointer-events-none transition-opacity duration-700"
+            src={config.wallpaper}
+          />
+        ) : null}
+
+        {/* Live Interactive Particle Constellation */}
+        {config.wallpaperType === 'particles' || config.wallpaperType === 'interactive' ? (
+          <ParticleBackground accent={config.accent} />
+        ) : null}
 
         {/* Overlay Dimming */}
         <div

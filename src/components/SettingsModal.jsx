@@ -3,7 +3,7 @@ import {
     Sliders, ChevronRight, Clock, ImageIcon, Palette,
     X, Download, Upload, Keyboard, Shield, Search, Sparkles
 } from 'lucide-react';
-import { CLOCK_THEMES, WALLPAPERS, SOLID_COLORS, ACCENTS, SEARCH_ENGINES } from '../utils/constants';
+import { CLOCK_THEMES, WALLPAPERS, LIVE_WALLPAPERS, SOLID_COLORS, ACCENTS, SEARCH_ENGINES } from '../utils/constants';
 
 const SettingsModal = ({ settingsOpen, setSettingsOpen, config, setConfig }) => {
     const [activeTab, setActiveTab] = useState('visuals');
@@ -42,42 +42,51 @@ const SettingsModal = ({ settingsOpen, setSettingsOpen, config, setConfig }) => 
 
     return (
         <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-xl z-50 flex items-center justify-center p-4 md:p-8 animate-fade-in select-none"
+            className="fixed inset-0 bg-black/40 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in select-none"
             onClick={() => setSettingsOpen(false)}
         >
             <div
-                className="w-full max-w-5xl h-[85vh] rounded-[30px] flex flex-col md:flex-row overflow-hidden shadow-[0_30px_90px_rgba(0,0,0,0.6)] relative border border-white/20"
+                className="w-full max-w-3xl h-[520px] rounded-[24px] flex flex-col md:flex-row overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.5)] relative border border-white/20 animate-pop-in"
                 style={{
-                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(20, 20, 25, 0.6) 100%)',
-                    backdropFilter: 'blur(40px) saturate(190%)',
-                    WebkitBackdropFilter: 'blur(40px) saturate(190%)',
-                    boxShadow: '0 30px 80px -15px rgba(0, 0, 0, 0.6), inset 0 1px 1px 0 rgba(255, 255, 255, 0.3)'
+                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(20, 20, 25, 0.65) 100%)',
+                    backdropFilter: 'blur(36px) saturate(190%)',
+                    WebkitBackdropFilter: 'blur(36px) saturate(190%)',
+                    boxShadow: '0 25px 60px -10px rgba(0, 0, 0, 0.6), inset 0 1px 1px 0 rgba(255, 255, 255, 0.3)'
                 }}
                 onClick={e => e.stopPropagation()}
             >
                 {/* Close Button Top-Right */}
                 <button
                     onClick={() => setSettingsOpen(false)}
-                    className="absolute top-5 right-5 z-20 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white/60 hover:text-white transition-colors"
-                    title="Close settings (Esc)"
+                    className="absolute top-4 right-4 z-20 p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white/60 hover:text-white transition-colors"
+                    title="Close (Esc)"
                 >
-                    <X size={18} />
+                    <X size={15} />
                 </button>
 
                 {/* Sidebar */}
-                <div className="w-full md:w-64 border-b md:border-b-0 md:border-r border-white/10 p-6 bg-white/[0.02] flex flex-col justify-between">
+                <div className="w-full md:w-56 border-b md:border-b-0 md:border-r border-white/10 p-4 bg-white/[0.02] flex flex-col justify-between shrink-0">
                     <div>
-                        <div className="flex items-center gap-2.5 mb-6 px-2">
-                            <div className="p-2 rounded-xl bg-white/10 border border-white/10 text-white">
-                                <Sliders size={18} />
-                            </div>
-                            <div>
-                                <h2 className="text-base font-bold text-white leading-tight">Preferences</h2>
-                                <span className="text-[10px] font-mono text-white/40">Custom Home v3.0</span>
-                            </div>
+                        {/* macOS Window Controls */}
+                        <div className="flex items-center gap-1.5 mb-4 px-1">
+                            <button
+                                onClick={() => setSettingsOpen(false)}
+                                className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e] hover:brightness-90 transition-all flex items-center justify-center group"
+                            >
+                                <X size={7} className="text-[#4c0000] opacity-0 group-hover:opacity-100" />
+                            </button>
+                            <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]"></div>
+                            <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]"></div>
                         </div>
 
-                        <nav className="flex md:flex-col gap-1.5 overflow-x-auto">
+                        <div className="flex items-center gap-2 mb-4 px-1">
+                            <div className="p-1.5 rounded-lg bg-white/10 text-white">
+                                <Sliders size={15} />
+                            </div>
+                            <h2 className="text-sm font-bold text-white tracking-tight">Preferences</h2>
+                        </div>
+
+                        <nav className="flex md:flex-col gap-1 overflow-x-auto">
                             {[
                                 { id: 'visuals', label: 'Clock & Themes', icon: Clock },
                                 { id: 'background', label: 'Wallpapers', icon: ImageIcon },
@@ -92,16 +101,16 @@ const SettingsModal = ({ settingsOpen, setSettingsOpen, config, setConfig }) => 
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
-                                        className={`text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-between gap-3 shrink-0 ${isActive
-                                            ? 'bg-white/15 text-white border border-white/10 shadow-sm'
+                                        className={`text-left px-3 py-2 rounded-xl text-xs font-medium transition-all flex items-center justify-between gap-2 shrink-0 ${isActive
+                                            ? 'bg-white/20 text-white shadow-xs border border-white/10'
                                             : 'text-white/50 hover:text-white hover:bg-white/5'
                                             }`}
                                     >
-                                        <div className="flex items-center gap-2.5">
-                                            <Icon size={15} className={isActive ? 'text-white' : 'text-white/40'} />
+                                        <div className="flex items-center gap-2">
+                                            <Icon size={14} className={isActive ? 'text-white' : 'text-white/40'} />
                                             <span>{tab.label}</span>
                                         </div>
-                                        <ChevronRight size={13} className={`hidden md:block transition-opacity ${isActive ? 'opacity-100' : 'opacity-0'}`} />
+                                        <ChevronRight size={12} className={`hidden md:block transition-opacity ${isActive ? 'opacity-100' : 'opacity-0'}`} />
                                     </button>
                                 );
                             })}
@@ -114,27 +123,27 @@ const SettingsModal = ({ settingsOpen, setSettingsOpen, config, setConfig }) => 
                 </div>
 
                 {/* Content Area */}
-                <div className="flex-1 p-6 md:p-8 overflow-y-auto custom-scrollbar bg-neutral-950/40">
+                <div className="flex-1 p-5 md:p-6 overflow-y-auto custom-scrollbar bg-neutral-950/25">
                     {/* 1. VISUALS: Clock Themes & Accents */}
                     {activeTab === 'visuals' && (
-                        <div className="space-y-8 animate-fade-in">
+                        <div className="space-y-6 animate-fade-in">
                             {/* Accent Palette */}
                             <section>
-                                <h3 className="flex items-center gap-2 mb-3 text-xs font-bold uppercase tracking-wider text-white/70">
-                                    <Palette size={14} /> UI Accent Color
+                                <h3 className="flex items-center gap-2 mb-2.5 text-[11px] font-bold uppercase tracking-wider text-white/70">
+                                    <Palette size={13} /> UI Accent Color
                                 </h3>
-                                <div className="flex flex-wrap gap-3">
+                                <div className="flex flex-wrap gap-2">
                                     {Object.keys(ACCENTS).map(color => (
                                         <button
                                             key={color}
                                             onClick={() => setConfig({ ...config, accent: color })}
-                                            className={`group relative flex items-center gap-2 px-3.5 py-2 rounded-xl border transition-all ${config.accent === color
-                                                ? 'bg-white/15 border-white/40 text-white shadow-md'
+                                            className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all text-xs ${config.accent === color
+                                                ? 'bg-white/20 border-white/40 text-white shadow-xs'
                                                 : 'bg-white/5 border-white/5 text-white/50 hover:border-white/20 hover:text-white'
                                                 }`}
                                         >
-                                            <div className={`w-4 h-4 rounded-full bg-gradient-to-br ${ACCENTS[color]} shadow-sm`}></div>
-                                            <span className="capitalize text-xs font-medium">{color}</span>
+                                            <div className={`w-3.5 h-3.5 rounded-full bg-gradient-to-br ${ACCENTS[color]} shadow-xs`}></div>
+                                            <span className="capitalize font-medium text-[11px]">{color}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -142,14 +151,14 @@ const SettingsModal = ({ settingsOpen, setSettingsOpen, config, setConfig }) => 
 
                             {/* Clock Face Selection */}
                             <section>
-                                <div className="flex items-center justify-between mb-3">
-                                    <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white/70">
-                                        <Clock size={14} /> Clock Faces (17 Unique Styles)
+                                <div className="flex items-center justify-between mb-2.5">
+                                    <h3 className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-white/70">
+                                        <Clock size={13} /> Clock Faces (17 Unique Styles)
                                     </h3>
                                     <span className="text-[10px] font-mono text-white/40">Active: {CLOCK_THEMES[config.clockTheme]?.name || 'Modern Sans'}</span>
                                 </div>
 
-                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                                     {Object.values(CLOCK_THEMES).map(theme => {
                                         const Icon = theme.icon;
                                         const isSelected = config.clockTheme === theme.id;
@@ -157,18 +166,18 @@ const SettingsModal = ({ settingsOpen, setSettingsOpen, config, setConfig }) => 
                                             <button
                                                 key={theme.id}
                                                 onClick={() => setConfig({ ...config, clockTheme: theme.id })}
-                                                className={`p-3.5 rounded-2xl border text-left transition-all relative flex flex-col justify-between min-h-[90px] ${isSelected
-                                                    ? 'bg-gradient-to-br from-white/20 to-white/5 border-white/40 text-white shadow-lg scale-[1.02]'
+                                                className={`p-2.5 rounded-xl border text-left transition-all relative flex flex-col justify-between min-h-[72px] ${isSelected
+                                                    ? 'bg-gradient-to-br from-white/25 to-white/10 border-white/40 text-white shadow-md scale-[1.02]'
                                                     : 'border-white/5 bg-white/[0.02] text-white/50 hover:border-white/20 hover:bg-white/5 hover:text-white'
                                                     }`}
                                             >
-                                                <div className="flex items-center justify-between w-full mb-2">
-                                                    <Icon size={20} className={isSelected ? 'text-white' : 'text-white/40'} />
-                                                    {isSelected && <span className="w-2 h-2 rounded-full bg-emerald-400"></span>}
+                                                <div className="flex items-center justify-between w-full mb-1">
+                                                    <Icon size={16} className={isSelected ? 'text-white' : 'text-white/40'} />
+                                                    {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-xs"></span>}
                                                 </div>
                                                 <div>
-                                                    <span className="font-bold text-xs block text-white">{theme.name}</span>
-                                                    <span className="text-[10px] text-white/40 line-clamp-1 leading-tight">{theme.description}</span>
+                                                    <span className="font-bold text-[11px] block text-white">{theme.name}</span>
+                                                    <span className="text-[9.5px] text-white/40 line-clamp-1 leading-tight">{theme.description}</span>
                                                 </div>
                                             </button>
                                         );
@@ -180,36 +189,116 @@ const SettingsModal = ({ settingsOpen, setSettingsOpen, config, setConfig }) => 
 
                     {/* 2. BACKGROUND: Wallpapers & Filters */}
                     {activeTab === 'background' && (
-                        <div className="space-y-6 animate-fade-in">
-                            <div className="flex gap-4 border-b border-white/10 pb-2">
-                                <button
-                                    onClick={() => setConfig({ ...config, wallpaperType: 'image' })}
-                                    className={`text-xs font-bold pb-1 transition-colors ${config.wallpaperType === 'image' ? 'text-white border-b-2 border-white' : 'text-white/40 hover:text-white'}`}
-                                >
-                                    HD Wallpapers
-                                </button>
-                                <button
-                                    onClick={() => setConfig({ ...config, wallpaperType: 'color' })}
-                                    className={`text-xs font-bold pb-1 transition-colors ${config.wallpaperType === 'color' ? 'text-white border-b-2 border-white' : 'text-white/40 hover:text-white'}`}
-                                >
-                                    Solid Tones
-                                </button>
+                        <div className="space-y-5 animate-fade-in">
+                            <div className="flex gap-2 border-b border-white/10 pb-2 overflow-x-auto">
+                                {[
+                                    { type: 'live', label: '🎥 Live Motion' },
+                                    { type: 'particles', label: '✨ Interactive Particles' },
+                                    { type: 'image', label: '🖼️ HD Wallpapers' },
+                                    { type: 'color', label: '🎨 Solid Tones' }
+                                ].map(tab => (
+                                    <button
+                                        key={tab.type}
+                                        onClick={() => {
+                                            if (tab.type === 'live' && config.wallpaperType !== 'live' && config.wallpaperType !== 'video') {
+                                                setConfig({ ...config, wallpaperType: 'live', wallpaper: LIVE_WALLPAPERS.auroraLive.url });
+                                            } else if (tab.type === 'particles') {
+                                                setConfig({ ...config, wallpaperType: 'particles' });
+                                            } else if (tab.type === 'image' && config.wallpaperType !== 'image') {
+                                                setConfig({ ...config, wallpaperType: 'image', wallpaper: WALLPAPERS.sequoiaDark });
+                                            } else {
+                                                setConfig({ ...config, wallpaperType: tab.type });
+                                            }
+                                        }}
+                                        className={`text-xs font-semibold px-3 py-1 rounded-lg transition-all shrink-0 ${
+                                            config.wallpaperType === tab.type || (tab.type === 'live' && (config.wallpaperType === 'live' || config.wallpaperType === 'video'))
+                                                ? 'bg-white/20 text-white shadow-xs'
+                                                : 'text-white/50 hover:text-white hover:bg-white/5'
+                                        }`}
+                                    >
+                                        {tab.label}
+                                    </button>
+                                ))}
                             </div>
 
-                            {config.wallpaperType === 'image' ? (
+                            {/* Live Video Wallpapers */}
+                            {(config.wallpaperType === 'live' || config.wallpaperType === 'video') && (
                                 <div className="space-y-4">
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                                        {Object.values(LIVE_WALLPAPERS).map((live) => (
+                                            <button
+                                                key={live.id}
+                                                onClick={() => setConfig({ ...config, wallpaper: live.url, wallpaperType: 'live' })}
+                                                className={`relative aspect-video rounded-xl overflow-hidden border-2 transition-all group ${config.wallpaper === live.url
+                                                    ? 'border-white ring-2 ring-white/30 scale-[1.02] shadow-lg'
+                                                    : 'border-transparent opacity-65 hover:opacity-100 hover:scale-[1.02]'
+                                                    }`}
+                                            >
+                                                <img src={live.poster} className="w-full h-full object-cover" alt={live.name} loading="lazy" />
+                                                <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/10 transition-colors">
+                                                    <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-xs">
+                                                        <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-white border-b-[5px] border-b-transparent ml-0.5"></div>
+                                                    </div>
+                                                </div>
+                                                <span className="absolute bottom-1.5 left-2 text-[10px] font-mono text-white drop-shadow-md bg-black/60 px-1.5 py-0.5 rounded">
+                                                    {live.name}
+                                                </span>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Custom Video URL Input */}
+                                    <div className="pt-1">
+                                        <label className="text-[11px] font-semibold text-white/60 mb-1.5 block">Custom Live Video URL (.mp4 / .webm)</label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                placeholder="https://example.com/video.mp4"
+                                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-white/30 font-mono"
+                                                value={config.customVideo || ''}
+                                                onChange={(e) => setConfig({ ...config, customVideo: e.target.value })}
+                                            />
+                                            <button
+                                                onClick={() => {
+                                                    if (config.customVideo) {
+                                                        setConfig({ ...config, wallpaper: config.customVideo, wallpaperType: 'live' });
+                                                    }
+                                                }}
+                                                className="px-3.5 py-1.5 bg-white text-black hover:bg-neutral-200 rounded-xl text-xs font-bold transition-all shrink-0"
+                                            >
+                                                Set Video
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Interactive Particles */}
+                            {config.wallpaperType === 'particles' && (
+                                <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center space-y-2">
+                                    <span className="text-3xl block">✨</span>
+                                    <h4 className="text-sm font-bold text-white">Interactive Constellation Shader</h4>
+                                    <p className="text-xs text-white/50 max-w-md mx-auto">
+                                        Active 60fps dynamic constellation particles moving smoothly in real-time with responsive physics. Colors adapt automatically to your UI Accent color.
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Static HD Wallpapers */}
+                            {config.wallpaperType === 'image' && (
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
                                         {Object.entries(WALLPAPERS).map(([key, url]) => (
                                             <button
                                                 key={key}
                                                 onClick={() => setConfig({ ...config, wallpaper: url, wallpaperType: 'image' })}
                                                 className={`relative aspect-video rounded-xl overflow-hidden border-2 transition-all group ${config.wallpaper === url
-                                                    ? 'border-white ring-2 ring-white/30 scale-[1.03] shadow-xl'
-                                                    : 'border-transparent opacity-60 hover:opacity-100 hover:scale-[1.02]'
+                                                    ? 'border-white ring-2 ring-white/30 scale-[1.02] shadow-lg'
+                                                    : 'border-transparent opacity-65 hover:opacity-100 hover:scale-[1.02]'
                                                     }`}
                                             >
                                                 <img src={url} className="w-full h-full object-cover" alt={key} loading="lazy" />
-                                                <span className="absolute bottom-1.5 left-2 text-[10px] font-mono capitalize text-white drop-shadow-md bg-black/50 px-1.5 py-0.5 rounded">
+                                                <span className="absolute bottom-1.5 left-2 text-[10px] font-mono capitalize text-white drop-shadow-md bg-black/60 px-1.5 py-0.5 rounded">
                                                     {key}
                                                 </span>
                                             </button>
@@ -217,13 +306,13 @@ const SettingsModal = ({ settingsOpen, setSettingsOpen, config, setConfig }) => 
                                     </div>
 
                                     {/* Custom URL Input */}
-                                    <div className="pt-2">
-                                        <label className="text-xs font-semibold text-white/60 mb-1.5 block">Custom Image URL</label>
+                                    <div className="pt-1">
+                                        <label className="text-[11px] font-semibold text-white/60 mb-1.5 block">Custom Image URL</label>
                                         <div className="flex gap-2">
                                             <input
                                                 type="text"
                                                 placeholder="https://images.unsplash.com/..."
-                                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-white/30"
+                                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-white/30 font-mono"
                                                 value={config.customImage || ''}
                                                 onChange={(e) => setConfig({ ...config, customImage: e.target.value })}
                                             />
@@ -233,15 +322,18 @@ const SettingsModal = ({ settingsOpen, setSettingsOpen, config, setConfig }) => 
                                                         setConfig({ ...config, wallpaper: config.customImage, wallpaperType: 'image' });
                                                     }
                                                 }}
-                                                className="px-4 py-2 bg-white text-black hover:bg-neutral-200 rounded-xl text-xs font-bold transition-all"
+                                                className="px-3.5 py-1.5 bg-white text-black hover:bg-neutral-200 rounded-xl text-xs font-bold transition-all shrink-0"
                                             >
                                                 Apply
                                             </button>
                                         </div>
                                     </div>
                                 </div>
-                            ) : (
-                                <div className="grid grid-cols-6 sm:grid-cols-8 gap-3">
+                            )}
+
+                            {/* Solid Colors */}
+                            {config.wallpaperType === 'color' && (
+                                <div className="grid grid-cols-6 sm:grid-cols-8 gap-2.5">
                                     {SOLID_COLORS.map(color => (
                                         <button
                                             key={color}

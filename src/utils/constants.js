@@ -53,6 +53,45 @@ export const WALLPAPERS = {
     ocean: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=2600&auto=format&fit=crop"
 };
 
+export const LIVE_WALLPAPERS = {
+    auroraLive: {
+        id: 'auroraLive',
+        name: 'Northern Aurora',
+        url: 'https://assets.mixkit.co/videos/preview/mixkit-aurora-borealis-over-a-snowy-mountain-42861-large.mp4',
+        poster: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=600&auto=format&fit=crop'
+    },
+    cyberpunkRain: {
+        id: 'cyberpunkRain',
+        name: 'Neon Rain Drops',
+        url: 'https://assets.mixkit.co/videos/preview/mixkit-rain-falling-on-the-water-of-a-lake-seen-up-18312-large.mp4',
+        poster: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop'
+    },
+    nebulaSpace: {
+        id: 'nebulaSpace',
+        name: 'Cosmic Starfield',
+        url: 'https://assets.mixkit.co/videos/preview/mixkit-flying-through-a-star-field-in-space-41541-large.mp4',
+        poster: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=600&auto=format&fit=crop'
+    },
+    oceanWavesLive: {
+        id: 'oceanWavesLive',
+        name: 'Ocean Waves',
+        url: 'https://assets.mixkit.co/videos/preview/mixkit-waves-coming-to-the-beach-5016-large.mp4',
+        poster: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=600&auto=format&fit=crop'
+    },
+    fireplaceLive: {
+        id: 'fireplaceLive',
+        name: 'Cozy Hearth',
+        url: 'https://assets.mixkit.co/videos/preview/mixkit-flames-burning-in-a-fireplace-42841-large.mp4',
+        poster: 'https://images.unsplash.com/photo-1542224566-6e85f2e6772f?q=80&w=600&auto=format&fit=crop'
+    },
+    mistyForestLive: {
+        id: 'mistyForestLive',
+        name: 'Misty Alpine Forest',
+        url: 'https://assets.mixkit.co/videos/preview/mixkit-fog-over-a-coniferous-forest-42871-large.mp4',
+        poster: 'https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=600&auto=format&fit=crop'
+    }
+};
+
 export const ACCENTS = {
     blue: "from-blue-500 to-cyan-400",
     purple: "from-purple-500 to-pink-500",
