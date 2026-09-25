@@ -26,9 +26,12 @@ const App = () => {
   const [config, setConfig] = useStickyState({
     name: 'User',
     wallpaper: WALLPAPERS.sequoiaDark,
-    wallpaperType: 'image', // 'image' | 'color'
+    wallpaperType: 'image', // 'image' | 'color' | 'live' | 'particles'
     customImage: '',
     clockTheme: 'modern',
+    clockPosition: 'center', // 'center' | 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-right'
+    clockScale: 1.0,
+    clockColor: null,
     blur: 0,
     brightness: 0.3, // overlay opacity
     vignette: 0.15, // corner darkness
@@ -58,6 +61,28 @@ const App = () => {
 
   const searchInputRef = useRef(null);
   const recognitionRef = useRef(null);
+
+  const [liveVideoSrc, setLiveVideoSrc] = useState(config.wallpaper);
+
+  // Restore custom video file from IndexedDB on refresh
+  useEffect(() => {
+    if (config.wallpaperType === 'live' || config.wallpaperType === 'video') {
+      if (config.wallpaper?.startsWith('blob:')) {
+        import('./utils/db').then(({ getMedia }) => {
+          getMedia('custom_live_video').then((blob) => {
+            if (blob) {
+              const url = URL.createObjectURL(blob);
+              setLiveVideoSrc(url);
+            } else {
+              setLiveVideoSrc(config.wallpaper);
+            }
+          });
+        });
+      } else {
+        setLiveVideoSrc(config.wallpaper);
+      }
+    }
+  }, [config.wallpaper, config.wallpaperType]);
 
   // Update header date periodically (every 30s) instead of every 1s to prevent full-tree re-renders
   useEffect(() => {
@@ -220,13 +245,16 @@ const App = () => {
         {/* Live Video Wallpaper */}
         {config.wallpaperType === 'video' || config.wallpaperType === 'live' ? (
           <video
-            key={config.wallpaper}
+            key={liveVideoSrc}
             autoPlay
             loop
             muted
             playsInline
             className="absolute inset-0 z-0 w-full h-full object-cover pointer-events-none transition-opacity duration-700"
-            src={config.wallpaper}
+            src={liveVideoSrc}
+            onError={() => {
+              console.warn('Video failed to load from remote URL, falling back.');
+            }}
           />
         ) : null}
 
@@ -283,6 +311,25 @@ const App = () => {
           </div>
         </header>
 
+        {/* Pinned Off-Center Clock Display */}
+        {config.clockPosition && config.clockPosition !== 'center' && (
+          <div className={`fixed z-20 pointer-events-auto transition-all duration-500 animate-fade-in ${
+            config.clockPosition === 'top-left' ? 'top-20 left-8' :
+            config.clockPosition === 'top-center' ? 'top-20 left-1/2 -translate-x-1/2' :
+            config.clockPosition === 'top-right' ? 'top-20 right-8' :
+            config.clockPosition === 'bottom-left' ? 'bottom-24 left-8' :
+            config.clockPosition === 'bottom-right' ? 'bottom-24 right-8' :
+            'top-20 left-1/2 -translate-x-1/2'
+          }`}>
+            <ClockDisplay
+              theme={config.clockTheme}
+              accent={config.accent}
+              scale={(config.clockScale || 1.0) * 0.85}
+              customColor={config.clockColor}
+            />
+          </div>
+        )}
+
         {/* 3. MAIN DASHBOARD GRID */}
         <main className="relative z-10 h-[calc(100vh-90px)] grid grid-cols-12 gap-6 px-8 pb-6 items-center">
 
@@ -297,10 +344,17 @@ const App = () => {
           {/* CENTER FOCUS & CLOCK COLUMN */}
           <div className={`${isZenMode ? 'col-span-12' : 'col-span-6'} flex flex-col items-center justify-center transition-all duration-500`}>
 
-            {/* Clock Face Display */}
-            <div className="mb-8 scale-100 transition-transform duration-500 cursor-default">
-              <ClockDisplay theme={config.clockTheme} accent={config.accent} />
-            </div>
+            {/* In-Center Clock Face Display */}
+            {(!config.clockPosition || config.clockPosition === 'center') && (
+              <div className="mb-8 scale-100 transition-all duration-500 cursor-default">
+                <ClockDisplay
+                  theme={config.clockTheme}
+                  accent={config.accent}
+                  scale={config.clockScale || 1.0}
+                  customColor={config.clockColor}
+                />
+              </div>
+            )}
 
             {/* Omni Search Bar */}
             <form onSubmit={handleSearch} className="w-full max-w-xl relative group z-30 mb-8">

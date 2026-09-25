@@ -50,7 +50,7 @@ const numberToWords = (num) => {
     return tens[Math.floor(num / 10)] + (num % 10 !== 0 ? ' ' + units[num % 10] : '');
 };
 
-const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => {
+const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue', scale = 1, customColor = null }) => {
     // Internal ticking if parent doesn't provide high frequency ticks
     const [internalTime, setInternalTime] = useState(() => new Date());
 
@@ -68,11 +68,12 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
     }, [dateObj]);
 
     const accentGradient = ACCENTS[accent] || ACCENTS.blue;
-    const accentHex = ACCENT_COLORS[accent] || ACCENT_COLORS.blue;
+    const accentHex = customColor || ACCENT_COLORS[accent] || ACCENT_COLORS.blue;
 
-    // --- 1. Swiss Analog (Luxury Chronograph) ---
-    if (theme === 'analog') {
-        return (
+    const renderTheme = () => {
+        // --- 1. Swiss Analog (Luxury Chronograph) ---
+        if (theme === 'analog') {
+            return (
             <div className="relative w-80 h-80 rounded-full flex items-center justify-center shadow-[0_25px_60px_rgba(0,0,0,0.85)] select-none">
                 {/* 1. Metal Case / Bezel */}
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-neutral-400 via-neutral-200 to-neutral-500 border border-neutral-600 shadow-2xl"></div>
@@ -98,7 +99,7 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
                     <div key={i} className="absolute inset-4 pointer-events-none">
                         <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-2 h-5 bg-white rounded-sm shadow-[0_0_6px_rgba(255,255,255,0.6)] z-10"
                             style={{ transform: `rotate(${i * 30}deg)`, transformOrigin: '50% 140px' }}>
-                            <div className="absolute inset-[1.5px] bg-[#bbf7d0] opacity-90 rounded-[1px]"></div>
+                            <div className="absolute inset-[1.5px] rounded-[1px]" style={{ backgroundColor: customColor || '#bbf7d0', opacity: 0.9 }}></div>
                         </div>
                     </div>
                 ))}
@@ -118,18 +119,23 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
                 {/* Hour Hand */}
                 <div className="absolute w-3.5 h-20 bg-gradient-to-t from-neutral-300 to-white rounded-t-md origin-bottom shadow-[-2px_4px_8px_rgba(0,0,0,0.8)] z-20"
                     style={{ transform: `rotate(${degH}deg)`, bottom: '50%', left: 'calc(50% - 7px)' }}>
-                    <div className="absolute top-2 left-1 right-1 h-12 bg-[#bbf7d0] opacity-90 rounded-sm"></div>
+                    <div className="absolute top-2 left-1 right-1 h-12 rounded-sm" style={{ backgroundColor: customColor || '#bbf7d0', opacity: 0.9 }}></div>
                 </div>
 
                 {/* Minute Hand */}
                 <div className="absolute w-2.5 h-28 bg-gradient-to-t from-neutral-300 to-white rounded-t-md origin-bottom shadow-[-2px_4px_8px_rgba(0,0,0,0.8)] z-30"
                     style={{ transform: `rotate(${degM}deg)`, bottom: '50%', left: 'calc(50% - 5px)' }}>
-                    <div className="absolute top-2 left-[2px] right-[2px] h-20 bg-[#bbf7d0] opacity-90 rounded-sm"></div>
+                    <div className="absolute top-2 left-[2px] right-[2px] h-20 rounded-sm" style={{ backgroundColor: customColor || '#bbf7d0', opacity: 0.9 }}></div>
                 </div>
 
                 {/* Second Hand */}
-                <div className={`absolute w-[1.5px] h-32 bg-gradient-to-t ${accentGradient} origin-bottom z-40`}
-                    style={{ transform: `rotate(${degS}deg)`, bottom: '50%', left: 'calc(50% - 0.75px)' }}>
+                <div className={`absolute w-[1.5px] h-32 origin-bottom z-40`}
+                    style={{
+                        transform: `rotate(${degS}deg)`,
+                        bottom: '50%',
+                        left: 'calc(50% - 0.75px)',
+                        background: customColor ? customColor : undefined
+                    }}>
                     <div className="absolute -bottom-4 -left-1.5 w-3.5 h-3.5 rounded-full bg-white border border-neutral-700"></div>
                 </div>
 
@@ -154,7 +160,8 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
                 {/* Active Glowing Digit */}
                 <span className="relative z-10 text-5xl md:text-6xl font-mono font-bold text-amber-400 drop-shadow-[0_0_12px_rgba(251,146,60,0.9)] animate-pulse"
                     style={{
-                        textShadow: '0 0 10px #f97316, 0 0 20px #ea580c, 0 0 35px #c2410c'
+                        color: customColor || undefined,
+                        textShadow: customColor ? `0 0 10px ${customColor}, 0 0 25px ${customColor}` : '0 0 10px #f97316, 0 0 20px #ea580c, 0 0 35px #c2410c'
                     }}>
                     {digit}
                 </span>
@@ -176,22 +183,22 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
                     
                     {/* Colon tubes */}
                     <div className="flex flex-col gap-4 mx-1">
-                        <div className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_10px_#f59e0b] animate-ping"></div>
-                        <div className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_10px_#f59e0b]"></div>
+                        <div className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_10px_#f59e0b] animate-ping" style={{ backgroundColor: customColor || undefined }}></div>
+                        <div className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_10px_#f59e0b]" style={{ backgroundColor: customColor || undefined }}></div>
                     </div>
 
                     {renderTube(m[0], 'm0')}
                     {renderTube(m[1], 'm1')}
 
                     <div className="flex flex-col gap-4 mx-1">
-                        <div className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_10px_#f59e0b] animate-ping"></div>
-                        <div className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_10px_#f59e0b]"></div>
+                        <div className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_10px_#f59e0b] animate-ping" style={{ backgroundColor: customColor || undefined }}></div>
+                        <div className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_10px_#f59e0b]" style={{ backgroundColor: customColor || undefined }}></div>
                     </div>
 
                     {renderTube(s[0], 's0')}
                     {renderTube(s[1], 's1')}
                 </div>
-                <div className="text-xs font-mono tracking-[0.4em] text-amber-500/70 uppercase">
+                <div className="text-xs font-mono tracking-[0.4em] uppercase" style={{ color: customColor ? `${customColor}aa` : 'rgba(245,158,11,0.7)' }}>
                     IN-18 NIXIE CHRONOMETER · {dateString}
                 </div>
             </div>
@@ -200,16 +207,14 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
 
     // --- 3. Automotive / Speedometer (Sports Gauge) ---
     if (theme === 'automotive') {
-        // Map 0-60 seconds to speedometer angle (-120deg to 120deg = 240deg sweep)
         const speedAngle = -120 + (rawS / 60) * 240;
         const rpmAngle = -120 + (rawM / 60) * 240;
 
         return (
             <div className="relative w-80 h-80 rounded-full bg-gradient-to-b from-neutral-900 to-black border-4 border-neutral-700 shadow-[0_20px_50px_rgba(0,0,0,0.9),inset_0_0_30px_rgba(0,0,0,0.8)] flex items-center justify-center select-none overflow-hidden">
-                {/* Carbon fiber texture overlay */}
                 <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:6px_6px]"></div>
 
-                {/* Dial Ticks (Gauge Marks) */}
+                {/* Dial Ticks */}
                 {[...Array(25)].map((_, i) => {
                     const angle = -120 + (i / 24) * 240;
                     const isRedline = i >= 20;
@@ -219,37 +224,39 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
                                 style={{
                                     transform: `rotate(${angle}deg)`,
                                     transformOrigin: '50% 135px',
-                                    backgroundColor: isRedline ? '#ef4444' : '#ffffff88'
+                                    backgroundColor: isRedline ? '#ef4444' : (customColor || '#ffffff88')
                                 }}
                             ></div>
                         </div>
                     );
                 })}
 
-                {/* Gauge Numbers */}
                 <div className="absolute top-12 left-10 text-[10px] font-mono font-bold text-neutral-400">0</div>
                 <div className="absolute top-8 left-1/2 -translate-x-1/2 text-[10px] font-mono font-bold text-neutral-300">30</div>
                 <div className="absolute top-12 right-10 text-[10px] font-mono font-bold text-red-500">60</div>
 
-                {/* Tachometer / RPM Needle (Minutes) */}
+                {/* Tachometer needle */}
                 <div className="absolute w-[2px] h-24 bg-neutral-400 origin-bottom transition-transform duration-300 z-10"
                     style={{ transform: `rotate(${rpmAngle}deg)`, bottom: '50%', left: 'calc(50% - 1px)' }}>
                 </div>
 
-                {/* Main Speedometer Needle (Seconds) */}
-                <div className="absolute w-1 h-30 bg-gradient-to-t from-red-500 to-rose-400 origin-bottom shadow-[0_0_10px_rgba(244,63,94,0.8)] transition-transform duration-100 z-20"
-                    style={{ transform: `rotate(${speedAngle}deg)`, bottom: '50%', left: 'calc(50% - 2px)' }}>
+                {/* Speedometer needle */}
+                <div className="absolute w-1 h-30 origin-bottom shadow-[0_0_10px_rgba(244,63,94,0.8)] transition-transform duration-100 z-20"
+                    style={{
+                        transform: `rotate(${speedAngle}deg)`,
+                        bottom: '50%',
+                        left: 'calc(50% - 2px)',
+                        background: customColor || 'linear-gradient(to top, #ef4444, #fb7185)'
+                    }}>
                 </div>
 
-                {/* Center Hub */}
                 <div className="absolute w-10 h-10 rounded-full bg-gradient-to-b from-neutral-700 to-neutral-900 border-2 border-neutral-500 shadow-xl z-30 flex items-center justify-center">
-                    <div className="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></div>
+                    <div className="w-3 h-3 rounded-full shadow-[0_0_8px_#ef4444]" style={{ backgroundColor: customColor || '#ef4444' }}></div>
                 </div>
 
-                {/* Digital Speed / Gear HUD */}
                 <div className="absolute bottom-10 flex flex-col items-center z-30">
                     <div className="flex items-baseline gap-1">
-                        <span className="text-4xl font-black font-mono tracking-tight text-white">{h}:{m}</span>
+                        <span className="text-4xl font-black font-mono tracking-tight text-white" style={customColor ? { color: customColor } : undefined}>{h}:{m}</span>
                         <span className="text-xs font-bold text-neutral-400">{p}</span>
                     </div>
                     <div className="flex items-center gap-2 mt-1">
@@ -269,32 +276,33 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
 
         return (
             <div className="relative w-80 h-80 rounded-full flex items-center justify-center bg-black/40 backdrop-blur-xl border border-white/10 shadow-[0_0_50px_rgba(147,51,234,0.25)] select-none">
-                {/* Star dust */}
                 <div className="absolute inset-0 rounded-full opacity-40 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px]"></div>
 
-                {/* Outer Orbit Ring: Seconds */}
-                <div className="absolute w-72 h-72 rounded-full border border-dashed border-indigo-500/30 animate-spin-slow">
-                    <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-indigo-400 shadow-[0_0_12px_#818cf8]"
-                        style={{ transform: `rotate(${secAngle}deg)`, transformOrigin: '50% 144px' }}></div>
+                {/* Orbit Rings */}
+                <div className="absolute w-72 h-72 rounded-full border border-dashed border-indigo-500/30">
+                    <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full shadow-[0_0_12px_#818cf8]"
+                        style={{
+                            backgroundColor: customColor || '#818cf8',
+                            transform: `rotate(${secAngle}deg)`,
+                            transformOrigin: '50% 144px'
+                        }}></div>
                 </div>
 
-                {/* Middle Orbit Ring: Minutes */}
                 <div className="absolute w-52 h-52 rounded-full border border-purple-500/40">
                     <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-purple-400 shadow-[0_0_14px_#c084fc]"
                         style={{ transform: `rotate(${minAngle}deg)`, transformOrigin: '50% 104px' }}></div>
                 </div>
 
-                {/* Inner Orbit Ring: Hours */}
                 <div className="absolute w-36 h-36 rounded-full border border-pink-500/40">
                     <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-pink-400 shadow-[0_0_16px_#f472b6]"
                         style={{ transform: `rotate(${hourAngle}deg)`, transformOrigin: '50% 72px' }}></div>
                 </div>
 
-                {/* Central Sun / Star Node with Digital Core */}
-                <div className="relative z-10 w-24 h-24 rounded-full bg-gradient-to-tr from-amber-500 via-orange-500 to-yellow-400 p-0.5 shadow-[0_0_35px_rgba(251,191,36,0.7)] flex flex-col items-center justify-center">
+                <div className="relative z-10 w-24 h-24 rounded-full p-0.5 shadow-[0_0_35px_rgba(251,191,36,0.7)] flex flex-col items-center justify-center"
+                    style={{ background: customColor ? customColor : 'linear-gradient(to top right, #f59e0b, #ea580c, #facc15)' }}>
                     <div className="w-full h-full rounded-full bg-black/80 flex flex-col items-center justify-center backdrop-blur-md">
-                        <span className="text-xl font-bold font-mono text-white tracking-tighter">{h}:{m}</span>
-                        <span className="text-[9px] font-mono text-amber-300/80 uppercase">{p}</span>
+                        <span className="text-xl font-bold font-mono text-white tracking-tighter" style={customColor ? { color: customColor } : undefined}>{h}:{m}</span>
+                        <span className="text-[9px] font-mono uppercase" style={{ color: customColor || '#fde047' }}>{p}</span>
                     </div>
                 </div>
             </div>
@@ -312,22 +320,28 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
         ];
 
         return (
-            <div className="p-6 bg-black/90 border border-emerald-500/30 rounded-2xl backdrop-blur-2xl shadow-[0_0_40px_rgba(16,185,129,0.2)] font-mono max-w-sm select-none">
-                <div className="flex justify-between items-center pb-3 mb-3 border-b border-emerald-500/20 text-xs text-emerald-400/80">
-                    <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> MATRIX.SYS</span>
+            <div className="p-6 bg-black/90 border border-emerald-500/30 rounded-2xl backdrop-blur-2xl shadow-[0_0_40px_rgba(16,185,129,0.2)] font-mono max-w-sm select-none"
+                style={customColor ? { borderColor: `${customColor}44`, boxShadow: `0 0 35px ${customColor}22` } : undefined}>
+                <div className="flex justify-between items-center pb-3 mb-3 border-b border-emerald-500/20 text-xs" style={{ color: customColor ? `${customColor}dd` : 'rgba(52,211,153,0.8)' }}>
+                    <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full animate-ping" style={{ backgroundColor: customColor || '#34d399' }}></span> MATRIX.SYS</span>
                     <span className="tracking-widest">{h}:{m}:{s} {p}</span>
                 </div>
                 <div className="grid grid-cols-5 gap-2 text-center text-sm font-bold tracking-wider">
                     {matrixWords.flat().map((word, idx) => {
                         const isHighlighted = (word === 'IT' || word === 'IS' || word === numberToWords(rawH) || word === numberToWords(rawM) || (rawM === 0 && word === "O'CLOCK"));
                         return (
-                            <span key={idx} className={`py-1 rounded transition-colors duration-500 ${isHighlighted ? 'text-emerald-300 drop-shadow-[0_0_8px_#34d399] bg-emerald-950/60 font-black' : 'text-neutral-700'}`}>
+                            <span key={idx} className={`py-1 rounded transition-colors duration-500 ${isHighlighted ? 'drop-shadow-[0_0_8px_#34d399] font-black' : 'text-neutral-700'}`}
+                                style={isHighlighted ? {
+                                    color: customColor || '#6ee7b7',
+                                    backgroundColor: customColor ? `${customColor}25` : 'rgba(6,78,59,0.6)',
+                                    textShadow: `0 0 8px ${customColor || '#34d399'}`
+                                } : undefined}>
                                 {word}
                             </span>
                         );
                     })}
                 </div>
-                <div className="mt-4 pt-3 border-t border-emerald-500/20 text-center text-[10px] text-emerald-500/60 tracking-widest uppercase">
+                <div className="mt-4 pt-3 border-t border-emerald-500/20 text-center text-[10px] tracking-widest uppercase" style={{ color: customColor ? `${customColor}99` : 'rgba(16,185,129,0.6)' }}>
                     {dateString}
                 </div>
             </div>
@@ -339,19 +353,19 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
         return (
             <div className="flex flex-col items-center gap-4 select-none">
                 <div className="flex items-center gap-2 md:gap-4 p-6 bg-[#181818] rounded-2xl shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),0_15px_35px_rgba(0,0,0,0.7)] border-b-4 border-black/50">
-                    <FlipGroup digits={h} />
+                    <FlipGroup digits={h} customColor={customColor} />
                     <div className="flex flex-col gap-3 mx-1">
-                        <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_red]"></div>
-                        <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_red]"></div>
+                        <div className="w-2.5 h-2.5 rounded-full animate-pulse" style={{ backgroundColor: customColor || '#ef4444', boxShadow: `0 0 8px ${customColor || 'red'}` }}></div>
+                        <div className="w-2.5 h-2.5 rounded-full animate-pulse" style={{ backgroundColor: customColor || '#ef4444', boxShadow: `0 0 8px ${customColor || 'red'}` }}></div>
                     </div>
-                    <FlipGroup digits={m} />
+                    <FlipGroup digits={m} customColor={customColor} />
 
                     <div className="ml-3 pl-3 border-l border-neutral-700/60 flex flex-col justify-between h-24">
-                        <span className="text-xs font-mono font-bold tracking-widest px-2 py-0.5 rounded bg-neutral-800 text-neutral-300">{p}</span>
-                        <span className="text-xl font-mono font-bold text-neutral-400">{s}</span>
+                        <span className="text-xs font-mono font-bold tracking-widest px-2 py-0.5 rounded bg-neutral-800" style={{ color: customColor || '#d4d4d4' }}>{p}</span>
+                        <span className="text-xl font-mono font-bold" style={{ color: customColor ? `${customColor}cc` : '#a3a3a3' }}>{s}</span>
                     </div>
                 </div>
-                <div className="text-xs font-mono tracking-[0.3em] text-neutral-400 uppercase">
+                <div className="text-xs font-mono tracking-[0.3em] uppercase" style={{ color: customColor ? `${customColor}99` : '#a3a3a3' }}>
                     FLIP-MATIC · {dateString}
                 </div>
             </div>
@@ -397,21 +411,18 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
         return (
             <div className="relative w-76 h-76 flex items-center justify-center bg-black/80 rounded-full shadow-2xl border border-neutral-800 select-none">
                 <svg className="absolute w-full h-full -rotate-90 p-4">
-                    {/* Seconds Ring */}
                     <circle cx="50%" cy="50%" r="46%" stroke="#262626" strokeWidth="6" fill="transparent" />
                     <circle cx="50%" cy="50%" r="46%" stroke={accentHex} strokeWidth="6" fill="transparent"
                         className="transition-all duration-1000 ease-linear"
                         strokeDasharray={circ * 2.8} strokeDashoffset={sOffset * 2.8} strokeLinecap="round" />
 
-                    {/* Minutes Ring */}
                     <circle cx="50%" cy="50%" r="36%" stroke="#1c1c1c" strokeWidth="8" fill="transparent" />
-                    <circle cx="50%" cy="50%" r="36%" stroke="#e5e5e5" strokeWidth="8" fill="transparent"
+                    <circle cx="50%" cy="50%" r="36%" stroke={customColor || "#e5e5e5"} strokeWidth="8" fill="transparent"
                         className="opacity-90 transition-all duration-500"
                         strokeDasharray={circ * 2.2} strokeDashoffset={mOffset * 2.2} strokeLinecap="round" />
 
-                    {/* Hours Ring */}
                     <circle cx="50%" cy="50%" r="26%" stroke="#141414" strokeWidth="10" fill="transparent" />
-                    <circle cx="50%" cy="50%" r="26%" stroke="url(#accentGrad)" strokeWidth="10" fill="transparent"
+                    <circle cx="50%" cy="50%" r="26%" stroke={customColor || "url(#accentGrad)"} strokeWidth="10" fill="transparent"
                         className="transition-all duration-500"
                         strokeDasharray={circ * 1.6} strokeDashoffset={hOffset * 1.6} strokeLinecap="round" />
 
@@ -424,7 +435,7 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
                 </svg>
 
                 <div className="z-10 text-center">
-                    <div className="text-4xl font-black text-white tracking-tighter">{h}:{m}</div>
+                    <div className="text-4xl font-black text-white tracking-tighter" style={customColor ? { color: customColor } : undefined}>{h}:{m}</div>
                     <div className="text-xs font-semibold text-neutral-400 tracking-wider">{dateString}</div>
                 </div>
             </div>
@@ -435,14 +446,17 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
     if (theme === 'glass') {
         return (
             <div className="relative group select-none">
-                <div className={`absolute -inset-4 bg-gradient-to-r ${accentGradient} rounded-3xl blur-2xl opacity-40 group-hover:opacity-60 transition duration-700`}></div>
+                <div className={`absolute -inset-4 rounded-3xl blur-2xl opacity-40 group-hover:opacity-60 transition duration-700`}
+                    style={{ background: customColor ? customColor : undefined, backgroundImage: !customColor ? undefined : 'none' }}></div>
                 <div className="relative bg-white/10 backdrop-blur-2xl border border-white/20 p-8 rounded-3xl shadow-2xl overflow-hidden">
-                    <h1 className="text-8xl md:text-9xl font-extralight text-white tracking-tight relative z-10 font-sans">
+                    <h1 className="text-8xl md:text-9xl font-extralight text-white tracking-tight relative z-10 font-sans"
+                        style={customColor ? { color: customColor } : undefined}>
                         {h}<span className="mx-2 font-normal animate-pulse text-white/70">:</span>{m}
                     </h1>
                     <div className="flex justify-between items-end mt-4 relative z-10">
-                        <span className={`text-2xl font-semibold bg-gradient-to-r ${accentGradient} bg-clip-text text-transparent`}>{p}</span>
-                        <span className="text-xs font-bold tracking-[0.3em] text-white/70 uppercase">{dateString}</span>
+                        <span className={`text-2xl font-semibold bg-gradient-to-r ${accentGradient} bg-clip-text text-transparent`}
+                            style={customColor ? { color: customColor, WebkitTextFillColor: customColor } : undefined}>{p}</span>
+                        <span className="text-xs font-bold tracking-[0.3em] uppercase" style={{ color: customColor ? `${customColor}cc` : 'rgba(255,255,255,0.7)' }}>{dateString}</span>
                     </div>
                 </div>
             </div>
@@ -452,15 +466,23 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
     // --- 10. Tactical HUD ---
     if (theme === 'tactical') {
         return (
-            <div className="relative w-76 h-76 rounded-full border border-dashed border-red-500/40 bg-black/70 backdrop-blur-md flex items-center justify-center select-none shadow-[0_0_30px_rgba(239,68,68,0.2)]">
-                <div className="absolute inset-4 border border-red-500/20 rounded-full border-l-transparent border-r-transparent animate-spin-slow"></div>
+            <div className="relative w-76 h-76 rounded-full border border-dashed border-red-500/40 bg-black/70 backdrop-blur-md flex items-center justify-center select-none shadow-[0_0_30px_rgba(239,68,68,0.2)]"
+                style={customColor ? { borderColor: `${customColor}66`, boxShadow: `0 0 30px ${customColor}33` } : undefined}>
+                <div className="absolute inset-4 border rounded-full border-l-transparent border-r-transparent animate-spin-slow"
+                    style={{ borderColor: customColor ? `${customColor}44` : 'rgba(239,68,68,0.2)' }}></div>
                 <div className="z-10 text-center">
-                    <div className="text-5xl font-black font-mono text-white tracking-tighter tabular-nums">{h}:{m}:{s}</div>
-                    <div className="text-[10px] font-mono text-red-400 mt-2 tracking-[0.3em] bg-red-500/10 px-2.5 py-1 rounded inline-block border border-red-500/30">
+                    <div className="text-5xl font-black font-mono text-white tracking-tighter tabular-nums" style={customColor ? { color: customColor } : undefined}>{h}:{m}:{s}</div>
+                    <div className="text-[10px] font-mono mt-2 tracking-[0.3em] px-2.5 py-1 rounded inline-block border"
+                        style={{
+                            color: customColor || '#f87171',
+                            backgroundColor: customColor ? `${customColor}22` : 'rgba(239,68,68,0.1)',
+                            borderColor: customColor ? `${customColor}55` : 'rgba(239,68,68,0.3)'
+                        }}>
                         SYS.ACTIVE · {p}
                     </div>
                 </div>
-                <div className="absolute w-full h-full border-t-2 border-red-500 rounded-full opacity-80" style={{ transform: `rotate(${rawS * 6}deg)` }}></div>
+                <div className="absolute w-full h-full border-t-2 rounded-full opacity-80"
+                    style={{ transform: `rotate(${rawS * 6}deg)`, borderColor: customColor || '#ef4444' }}></div>
             </div>
         );
     }
@@ -469,13 +491,18 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
     if (theme === 'neon') {
         return (
             <div className="text-center relative select-none">
-                <div className={`absolute inset-0 bg-gradient-to-r ${accentGradient} blur-[90px] opacity-40`}></div>
-                <div className="relative border-2 border-white/20 px-12 py-8 rounded-3xl bg-black/80 backdrop-blur-2xl shadow-[0_0_60px_rgba(0,0,0,0.8)]">
-                    <h1 className="text-7xl md:text-8xl font-black tracking-tighter leading-none text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.9)]">
+                <div className={`absolute inset-0 blur-[90px] opacity-40`}
+                    style={{ background: customColor ? customColor : undefined }}></div>
+                <div className="relative border-2 px-12 py-8 rounded-3xl bg-black/80 backdrop-blur-2xl shadow-[0_0_60px_rgba(0,0,0,0.8)]"
+                    style={{ borderColor: customColor ? `${customColor}66` : 'rgba(255,255,255,0.2)' }}>
+                    <h1 className="text-7xl md:text-8xl font-black tracking-tighter leading-none text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.9)]"
+                        style={customColor ? { color: customColor, textShadow: `0 0 25px ${customColor}` } : undefined}>
                         {h}:{m}
                     </h1>
-                    <div className={`h-1.5 w-full mt-4 bg-gradient-to-r ${accentGradient} rounded-full shadow-[0_0_20px_currentColor]`}></div>
-                    <div className="mt-3 text-xs font-mono tracking-[0.3em] text-white/70 uppercase">{dateString}</div>
+                    <div className={`h-1.5 w-full mt-4 rounded-full shadow-[0_0_20px_currentColor]`}
+                        style={{ background: customColor || `linear-gradient(to right, var(--tw-gradient-stops))` }}></div>
+                    <div className="mt-3 text-xs font-mono tracking-[0.3em] uppercase"
+                        style={{ color: customColor ? `${customColor}cc` : 'rgba(255,255,255,0.7)' }}>{dateString}</div>
                 </div>
             </div>
         );
@@ -487,11 +514,14 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
         const mWord = numberToWords(rawM);
         const isExact = rawM === 0;
         return (
-            <div className="text-left select-none max-w-2xl mx-auto px-8 py-8 border-l-4 border-white/60 bg-black/30 backdrop-blur-md rounded-r-2xl">
+            <div className="text-left select-none max-w-2xl mx-auto px-8 py-8 border-l-4 border-white/60 bg-black/30 backdrop-blur-md rounded-r-2xl"
+                style={customColor ? { borderLeftColor: customColor } : undefined}>
                 <div className="text-xs text-white/50 font-bold mb-2 tracking-[0.3em] uppercase">CURRENT TIME</div>
-                <h1 className="text-4xl md:text-6xl font-black leading-[0.95] tracking-tight text-white break-words">
+                <h1 className="text-4xl md:text-6xl font-black leading-[0.95] tracking-tight text-white break-words"
+                    style={customColor ? { color: customColor } : undefined}>
                     {hWord}<br />
-                    <span className={`text-transparent bg-clip-text bg-gradient-to-br ${accentGradient}`}>
+                    <span className={`text-transparent bg-clip-text bg-gradient-to-br ${accentGradient}`}
+                        style={customColor ? { color: customColor, WebkitTextFillColor: customColor } : undefined}>
                         {isExact ? "O'CLOCK" : mWord}
                     </span>
                 </h1>
@@ -505,7 +535,8 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
         const renderColumn = (bits) => (
             <div className="flex flex-col gap-2.5">
                 {bits.map((bit, i) => (
-                    <div key={i} className={`w-3.5 h-3.5 rounded-full transition-colors duration-300 ${bit === '1' ? `bg-gradient-to-r ${accentGradient} shadow-[0_0_10px_rgba(255,255,255,0.8)]` : 'bg-white/10'}`}></div>
+                    <div key={i} className={`w-3.5 h-3.5 rounded-full transition-colors duration-300 ${bit === '1' ? 'shadow-[0_0_10px_rgba(255,255,255,0.8)]' : 'bg-white/10'}`}
+                        style={bit === '1' ? { backgroundColor: customColor || '#34d399', boxShadow: `0 0 10px ${customColor || '#34d399'}` } : undefined}></div>
                 ))}
             </div>
         );
@@ -518,7 +549,7 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
                     <div className="h-24 w-px bg-white/15"></div>
                     <div className="flex gap-1.5">{renderColumn(binS[0])}{renderColumn(binS[1])}</div>
                 </div>
-                <div className="mt-4 flex justify-between text-xs text-emerald-400 font-mono tracking-widest opacity-70">
+                <div className="mt-4 flex justify-between text-xs font-mono tracking-widest opacity-70" style={{ color: customColor || '#34d399' }}>
                     <span>H</span><span>M</span><span>S</span>
                 </div>
                 <div className="mt-2 text-center font-mono text-white/40 text-sm">{h}:{m}:{s} {p}</div>
@@ -529,18 +560,22 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
     // --- 14. Terminal Shell ---
     if (theme === 'terminal') {
         return (
-            <div className="font-mono text-left bg-[#0c0c0c]/90 p-6 rounded-xl border border-emerald-500/40 shadow-[0_0_35px_rgba(16,185,129,0.15)] min-w-[340px] select-none backdrop-blur-xl">
-                <div className="text-emerald-500/60 text-xs mb-3 border-b border-emerald-500/20 pb-2 flex justify-between">
+            <div className="font-mono text-left bg-[#0c0c0c]/90 p-6 rounded-xl border border-emerald-500/40 shadow-[0_0_35px_rgba(16,185,129,0.15)] min-w-[340px] select-none backdrop-blur-xl"
+                style={customColor ? { borderColor: `${customColor}55`, boxShadow: `0 0 35px ${customColor}22` } : undefined}>
+                <div className="text-xs mb-3 border-b border-emerald-500/20 pb-2 flex justify-between"
+                    style={{ color: customColor ? `${customColor}99` : 'rgba(16,185,129,0.6)' }}>
                     <span>user@dashboard:~</span>
                     <span>bash (zsh)</span>
                 </div>
-                <div className="text-emerald-400 text-sm">
+                <div className="text-sm" style={{ color: customColor || '#34d399' }}>
                     <span className="opacity-50">$</span> date +"%r %Z"
-                    <div className="text-5xl font-bold tracking-tight my-2 text-white">
-                        {h}:{m}:{s} <span className="text-emerald-400 text-2xl">{p}</span>
+                    <div className="text-5xl font-bold tracking-tight my-2 text-white" style={customColor ? { color: customColor } : undefined}>
+                        {h}:{m}:{s} <span className="text-2xl" style={{ color: customColor || '#34d399' }}>{p}</span>
                     </div>
                 </div>
-                <div className="text-emerald-500/60 text-xs mt-3">{dateString} <span className="animate-pulse font-black">_</span></div>
+                <div className="text-xs mt-3" style={{ color: customColor ? `${customColor}99` : 'rgba(16,185,129,0.6)' }}>
+                    {dateString} <span className="animate-pulse font-black">_</span>
+                </div>
             </div>
         );
     }
@@ -549,9 +584,12 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
     if (theme === 'minimal') {
         return (
             <div className="flex flex-col items-center select-none">
-                <div className="text-[9rem] md:text-[11rem] font-thin leading-none text-white/95 tracking-tighter">{h}</div>
-                <div className={`h-1.5 w-20 my-1 bg-gradient-to-r ${accentGradient} rounded-full`}></div>
-                <div className="text-[9rem] md:text-[11rem] font-thin leading-none text-white/60 tracking-tighter">{m}</div>
+                <div className="text-[9rem] md:text-[11rem] font-thin leading-none tracking-tighter"
+                    style={{ color: customColor || 'rgba(255,255,255,0.95)' }}>{h}</div>
+                <div className="h-1.5 w-20 my-1 rounded-full"
+                    style={{ backgroundColor: customColor || '#ffffff', opacity: 0.8 }}></div>
+                <div className="text-[9rem] md:text-[11rem] font-thin leading-none tracking-tighter"
+                    style={{ color: customColor ? `${customColor}99` : 'rgba(255,255,255,0.6)' }}>{m}</div>
             </div>
         );
     }
@@ -561,7 +599,8 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
         return (
             <div className="flex flex-col items-center justify-center select-none -space-y-6">
                 <span className="text-[6.5rem] md:text-[7.5rem] font-black tracking-tighter text-white/20 leading-none">{h}</span>
-                <span className={`text-[6.5rem] md:text-[7.5rem] font-black tracking-tighter bg-gradient-to-b ${accentGradient} bg-clip-text text-transparent leading-none z-10 drop-shadow-xl`}>{m}</span>
+                <span className={`text-[6.5rem] md:text-[7.5rem] font-black tracking-tighter bg-gradient-to-b ${accentGradient} bg-clip-text text-transparent leading-none z-10 drop-shadow-xl`}
+                    style={customColor ? { color: customColor, WebkitTextFillColor: customColor } : undefined}>{m}</span>
                 <span className="text-[6.5rem] md:text-[7.5rem] font-black tracking-tighter text-white/20 leading-none">{s}</span>
             </div>
         );
@@ -571,39 +610,66 @@ const ClockDisplay = ({ time: propTime, theme = 'modern', accent = 'blue' }) => 
     return (
         <div className="text-center select-none px-4 group cursor-default">
             <div className="flex items-baseline justify-center gap-3 transition-transform duration-300 hover:scale-[1.02]">
-                <h1 className="text-8xl md:text-9xl font-extrabold tracking-tight leading-none bg-gradient-to-b from-white via-white to-white/60 bg-clip-text text-transparent drop-shadow-2xl font-variant-numeric tabular-nums">
+                <h1 
+                    className="text-8xl md:text-9xl font-extrabold tracking-tight leading-none bg-gradient-to-b from-white via-white to-white/60 bg-clip-text text-transparent drop-shadow-2xl font-variant-numeric tabular-nums"
+                    style={customColor ? { color: customColor, WebkitTextFillColor: customColor, textShadow: `0 0 35px ${customColor}44` } : undefined}
+                >
                     {h}:{m}
                 </h1>
                 <div className="flex flex-col items-start">
-                    <span className={`text-3xl font-black bg-gradient-to-br ${accentGradient} bg-clip-text text-transparent`}>{p}</span>
+                    <span 
+                        className={`text-3xl font-black bg-gradient-to-br ${accentGradient} bg-clip-text text-transparent`}
+                        style={customColor ? { color: customColor, WebkitTextFillColor: customColor } : undefined}
+                    >
+                        {p}
+                    </span>
                     <span className="text-sm font-semibold text-white/40 mt-1 font-mono">{s}</span>
                 </div>
             </div>
-            <div className="h-[1px] w-48 bg-gradient-to-r from-transparent via-white/30 to-transparent mx-auto my-3"></div>
-            <p className="text-sm md:text-base font-semibold text-white/70 tracking-[0.35em] uppercase">
+            <div 
+                className="h-[1px] w-48 bg-gradient-to-r from-transparent via-white/30 to-transparent mx-auto my-3"
+                style={customColor ? { background: `linear-gradient(to right, transparent, ${customColor}88, transparent)` } : undefined}
+            ></div>
+            <p 
+                className="text-sm md:text-base font-semibold text-white/70 tracking-[0.35em] uppercase"
+                style={customColor ? { color: `${customColor}cc` } : undefined}
+            >
                 {dateString}
             </p>
+        </div>
+        );
+    };
+
+    return (
+        <div
+            className="transition-all duration-300 flex items-center justify-center select-none"
+            style={{
+                transform: scale && scale !== 1 ? `scale(${scale})` : undefined,
+                transformOrigin: 'center center'
+            }}
+        >
+            {renderTheme()}
         </div>
     );
 };
 
 // --- Sub-components for Flip Clock ---
 
-const FlipGroup = ({ digits }) => (
+const FlipGroup = ({ digits, customColor }) => (
     <div className="flex gap-1">
-        <FlipCard digit={digits[0]} />
-        <FlipCard digit={digits[1]} />
+        <FlipCard digit={digits[0]} customColor={customColor} />
+        <FlipCard digit={digits[1]} customColor={customColor} />
     </div>
 );
 
-const FlipCard = ({ digit }) => (
+const FlipCard = ({ digit, customColor }) => (
     <div className="relative w-14 h-20 md:w-18 md:h-28 bg-[#1f1f1f] rounded-lg overflow-hidden shadow-2xl border border-white/10">
         <div className="absolute inset-0 grid grid-rows-2">
             <div className="bg-[#282828] border-b border-black/60 flex items-end justify-center overflow-hidden">
-                <span className="text-5xl md:text-6xl font-black text-neutral-100 translate-y-[50%] font-mono">{digit}</span>
+                <span className="text-5xl md:text-6xl font-black translate-y-[50%] font-mono" style={{ color: customColor || '#f5f5f5' }}>{digit}</span>
             </div>
             <div className="bg-[#222222] flex items-start justify-center overflow-hidden">
-                <span className="text-5xl md:text-6xl font-black text-neutral-100 -translate-y-[50%] font-mono">{digit}</span>
+                <span className="text-5xl md:text-6xl font-black -translate-y-[50%] font-mono" style={{ color: customColor || '#f5f5f5' }}>{digit}</span>
             </div>
         </div>
         <div className="absolute top-1/2 left-0 w-full h-[1px] bg-black shadow-[0_1px_2px_rgba(255,255,255,0.1)]"></div>

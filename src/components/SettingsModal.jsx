@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import {
     Sliders, ChevronRight, Clock, ImageIcon, Palette,
-    X, Download, Upload, Keyboard, Shield, Search, Sparkles
+    X, Download, Upload, Keyboard, Shield, Search, Sparkles,
+    Move, Maximize, Pipette, Eye
 } from 'lucide-react';
+import ClockDisplay from './ClockDisplay';
 import { CLOCK_THEMES, WALLPAPERS, LIVE_WALLPAPERS, SOLID_COLORS, ACCENTS, SEARCH_ENGINES } from '../utils/constants';
 
 const SettingsModal = ({ settingsOpen, setSettingsOpen, config, setConfig }) => {
@@ -46,7 +48,7 @@ const SettingsModal = ({ settingsOpen, setSettingsOpen, config, setConfig }) => 
             onClick={() => setSettingsOpen(false)}
         >
             <div
-                className="w-full max-w-3xl h-[520px] rounded-[24px] flex flex-col md:flex-row overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.5)] relative border border-white/20 animate-pop-in"
+                className="w-full max-w-3xl h-[550px] md:h-[570px] rounded-[24px] flex flex-col md:flex-row overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.5)] relative border border-white/20 animate-pop-in"
                 style={{
                     background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(20, 20, 25, 0.65) 100%)',
                     backdropFilter: 'blur(36px) saturate(190%)',
@@ -86,7 +88,7 @@ const SettingsModal = ({ settingsOpen, setSettingsOpen, config, setConfig }) => 
                             <h2 className="text-sm font-bold text-white tracking-tight">Preferences</h2>
                         </div>
 
-                        <nav className="flex md:flex-col gap-1 overflow-x-auto">
+                        <nav className="flex md:flex-col gap-1 overflow-x-auto no-scrollbar">
                             {[
                                 { id: 'visuals', label: 'Clock & Themes', icon: Clock },
                                 { id: 'background', label: 'Wallpapers', icon: ImageIcon },
@@ -124,13 +126,158 @@ const SettingsModal = ({ settingsOpen, setSettingsOpen, config, setConfig }) => 
 
                 {/* Content Area */}
                 <div className="flex-1 p-5 md:p-6 overflow-y-auto custom-scrollbar bg-neutral-950/25">
-                    {/* 1. VISUALS: Clock Themes & Accents */}
+                    {/* 1. VISUALS: Clock Themes, Position, Color & Live Preview */}
                     {activeTab === 'visuals' && (
                         <div className="space-y-6 animate-fade-in">
-                            {/* Accent Palette */}
+                            {/* LIVE CLOCK PREVIEW STAGE */}
+                            <div className="relative rounded-2xl overflow-hidden border border-white/15 p-4 flex flex-col items-center justify-center min-h-[160px] shadow-2xl bg-black/45 backdrop-blur-2xl">
+                                <div className="absolute top-2.5 left-3 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/10 border border-white/10 text-[9.5px] font-mono uppercase text-white/80">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    <span>Live Preview</span>
+                                </div>
+                                <div className="absolute top-2.5 right-3 text-[10px] font-mono text-white/40">
+                                    {CLOCK_THEMES[config.clockTheme]?.name || 'Modern Sans'}
+                                </div>
+
+                                <div className="my-2 transition-all duration-300">
+                                    <ClockDisplay
+                                        theme={config.clockTheme}
+                                        accent={config.accent}
+                                        scale={0.65}
+                                        customColor={config.clockColor}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* CLOCK SCREEN POSITION SELECTOR */}
                             <section>
-                                <h3 className="flex items-center gap-2 mb-2.5 text-[11px] font-bold uppercase tracking-wider text-white/70">
-                                    <Palette size={13} /> UI Accent Color
+                                <div className="flex items-center justify-between mb-1.5">
+                                    <h3 className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-white/70">
+                                        <Move size={13} /> Clock Position on Screen
+                                    </h3>
+                                    <span className="text-[10px] font-mono text-white/40 capitalize">
+                                        Active: {config.clockPosition || 'Center'}
+                                    </span>
+                                </div>
+                                <p className="text-[10.5px] text-white/40 mb-2.5">
+                                    Position the clock according to your video wallpaper subject (e.g. Move away from faces or nature points).
+                                </p>
+
+                                <div className="grid grid-cols-3 gap-2">
+                                    {[
+                                        { id: 'top-left', label: '↖ Top Left' },
+                                        { id: 'top-center', label: '↑ Top Center' },
+                                        { id: 'top-right', label: '↗ Top Right' },
+                                        { id: 'bottom-left', label: '↙ Bottom Left' },
+                                        { id: 'center', label: '⦿ Center (Default)' },
+                                        { id: 'bottom-right', label: '↘ Bottom Right' },
+                                    ].map(pos => {
+                                        const isSelected = (config.clockPosition || 'center') === pos.id;
+                                        return (
+                                            <button
+                                                key={pos.id}
+                                                onClick={() => setConfig({ ...config, clockPosition: pos.id })}
+                                                className={`py-2 px-2 rounded-xl border text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+                                                    isSelected
+                                                        ? 'bg-white/25 border-white/40 text-white shadow-md scale-[1.01]'
+                                                        : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:text-white'
+                                                }`}
+                                            >
+                                                {pos.label}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </section>
+
+                            {/* CLOCK SIZE SCALE & COLOR CONTROLS */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {/* Scale */}
+                                <section className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-white/70">
+                                            <Maximize size={13} /> Clock Size Scale
+                                        </h3>
+                                        <span className="text-[10px] font-mono text-white/50">{config.clockScale || 1.0}x</span>
+                                    </div>
+                                    <div className="flex gap-1.5">
+                                        {[
+                                            { scale: 0.75, label: '0.75x' },
+                                            { scale: 1.0, label: '1.0x' },
+                                            { scale: 1.2, label: '1.2x' },
+                                            { scale: 1.4, label: '1.4x' },
+                                        ].map(item => (
+                                            <button
+                                                key={item.scale}
+                                                onClick={() => setConfig({ ...config, clockScale: item.scale })}
+                                                className={`flex-1 py-1.5 rounded-lg border text-xs font-mono font-bold transition-all ${(config.clockScale || 1.0) === item.scale
+                                                    ? 'bg-white text-black border-white shadow-xs'
+                                                    : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:text-white'
+                                                }`}
+                                            >
+                                                {item.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </section>
+
+                                {/* Color Tint */}
+                                <section className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-white/70">
+                                            <Palette size={13} /> Clock Color
+                                        </h3>
+                                        {config.clockColor && (
+                                            <button
+                                                onClick={() => setConfig({ ...config, clockColor: null })}
+                                                className="text-[10px] text-white/40 hover:text-white underline transition-colors"
+                                            >
+                                                Reset
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                        {[
+                                            { hex: null, label: 'Default' },
+                                            { hex: '#ffffff', label: 'White' },
+                                            { hex: '#38bdf8', label: 'Sky' },
+                                            { hex: '#34d399', label: 'Emerald' },
+                                            { hex: '#fbbf24', label: 'Amber' },
+                                            { hex: '#f43f5e', label: 'Rose' },
+                                            { hex: '#c084fc', label: 'Purple' },
+                                            { hex: '#fb923c', label: 'Coral' },
+                                        ].map((colorItem, i) => {
+                                            const isSelected = (!colorItem.hex && !config.clockColor) || (config.clockColor === colorItem.hex);
+                                            return (
+                                                <button
+                                                    key={i}
+                                                    title={colorItem.label}
+                                                    onClick={() => setConfig({ ...config, clockColor: colorItem.hex })}
+                                                    className={`w-6 h-6 rounded-full transition-all flex items-center justify-center border border-white/20 ${
+                                                        isSelected ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-110' : 'opacity-70 hover:opacity-100 hover:scale-105'
+                                                    }`}
+                                                    style={{ backgroundColor: colorItem.hex || 'rgba(255,255,255,0.2)' }}
+                                                >
+                                                </button>
+                                            );
+                                        })}
+                                        {/* Custom Color Input */}
+                                        <label className="relative w-6 h-6 rounded-full overflow-hidden border border-white/30 cursor-pointer flex items-center justify-center bg-gradient-to-tr from-rose-500 via-emerald-500 to-sky-500 hover:scale-105 transition-transform" title="Custom Hex Color">
+                                            <input
+                                                type="color"
+                                                className="opacity-0 absolute inset-0 cursor-pointer"
+                                                value={config.clockColor || '#ffffff'}
+                                                onChange={(e) => setConfig({ ...config, clockColor: e.target.value })}
+                                            />
+                                        </label>
+                                    </div>
+                                </section>
+                            </div>
+
+                            {/* UI Accent Palette */}
+                            <section>
+                                <h3 className="flex items-center gap-2 mb-2 text-[11px] font-bold uppercase tracking-wider text-white/70">
+                                    <Sparkles size={13} /> UI Glow & Accent Palette
                                 </h3>
                                 <div className="flex flex-wrap gap-2">
                                     {Object.keys(ACCENTS).map(color => (
@@ -190,35 +337,39 @@ const SettingsModal = ({ settingsOpen, setSettingsOpen, config, setConfig }) => 
                     {/* 2. BACKGROUND: Wallpapers & Filters */}
                     {activeTab === 'background' && (
                         <div className="space-y-5 animate-fade-in">
-                            <div className="flex gap-2 border-b border-white/10 pb-2 overflow-x-auto">
+                            {/* Segmented Category Bar */}
+                            <div className="flex p-1 bg-black/40 border border-white/10 rounded-2xl gap-1">
                                 {[
                                     { type: 'live', label: '🎥 Live Motion' },
-                                    { type: 'particles', label: '✨ Interactive Particles' },
-                                    { type: 'image', label: '🖼️ HD Wallpapers' },
+                                    { type: 'particles', label: '✨ Particles' },
+                                    { type: 'image', label: '🖼️ Wallpapers' },
                                     { type: 'color', label: '🎨 Solid Tones' }
-                                ].map(tab => (
-                                    <button
-                                        key={tab.type}
-                                        onClick={() => {
-                                            if (tab.type === 'live' && config.wallpaperType !== 'live' && config.wallpaperType !== 'video') {
-                                                setConfig({ ...config, wallpaperType: 'live', wallpaper: LIVE_WALLPAPERS.auroraLive.url });
-                                            } else if (tab.type === 'particles') {
-                                                setConfig({ ...config, wallpaperType: 'particles' });
-                                            } else if (tab.type === 'image' && config.wallpaperType !== 'image') {
-                                                setConfig({ ...config, wallpaperType: 'image', wallpaper: WALLPAPERS.sequoiaDark });
-                                            } else {
-                                                setConfig({ ...config, wallpaperType: tab.type });
-                                            }
-                                        }}
-                                        className={`text-xs font-semibold px-3 py-1 rounded-lg transition-all shrink-0 ${
-                                            config.wallpaperType === tab.type || (tab.type === 'live' && (config.wallpaperType === 'live' || config.wallpaperType === 'video'))
-                                                ? 'bg-white/20 text-white shadow-xs'
-                                                : 'text-white/50 hover:text-white hover:bg-white/5'
-                                        }`}
-                                    >
-                                        {tab.label}
-                                    </button>
-                                ))}
+                                ].map(tab => {
+                                    const isSelected = config.wallpaperType === tab.type || (tab.type === 'live' && (config.wallpaperType === 'live' || config.wallpaperType === 'video'));
+                                    return (
+                                        <button
+                                            key={tab.type}
+                                            onClick={() => {
+                                                if (tab.type === 'live' && config.wallpaperType !== 'live' && config.wallpaperType !== 'video') {
+                                                    setConfig({ ...config, wallpaperType: 'live', wallpaper: LIVE_WALLPAPERS.auroraLive.url });
+                                                } else if (tab.type === 'particles') {
+                                                    setConfig({ ...config, wallpaperType: 'particles' });
+                                                } else if (tab.type === 'image' && config.wallpaperType !== 'image') {
+                                                    setConfig({ ...config, wallpaperType: 'image', wallpaper: WALLPAPERS.sequoiaDark });
+                                                } else {
+                                                    setConfig({ ...config, wallpaperType: tab.type });
+                                                }
+                                            }}
+                                            className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-semibold transition-all text-center ${
+                                                isSelected
+                                                    ? 'bg-white/20 text-white shadow-xs border border-white/15'
+                                                    : 'text-white/50 hover:text-white hover:bg-white/5 border border-transparent'
+                                            }`}
+                                        >
+                                            {tab.label}
+                                        </button>
+                                    );
+                                })}
                             </div>
 
                             {/* Live Video Wallpapers */}
@@ -247,9 +398,41 @@ const SettingsModal = ({ settingsOpen, setSettingsOpen, config, setConfig }) => 
                                         ))}
                                     </div>
 
+                                    {/* Upload Video File from PC / Mac (Recommended for Pixabay / Pexels downloads) */}
+                                    <div className="p-3.5 rounded-xl bg-white/5 border border-white/10 space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                                                    <span>📁</span> Upload Downloaded Video File
+                                                </h4>
+                                                <p className="text-[10px] text-white/50">
+                                                    Downloaded a video from Pixabay or Pexels? Upload the .mp4 file directly!
+                                                </p>
+                                            </div>
+
+                                            <label className="px-3.5 py-1.5 bg-white text-black hover:bg-neutral-200 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 shadow-sm">
+                                                Choose File
+                                                <input
+                                                    type="file"
+                                                    accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                                                    className="hidden"
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files && e.target.files[0];
+                                                        if (file) {
+                                                            const { saveMedia } = await import('../utils/db');
+                                                            await saveMedia('custom_live_video', file);
+                                                            const objUrl = URL.createObjectURL(file);
+                                                            setConfig({ ...config, wallpaper: objUrl, wallpaperType: 'live' });
+                                                        }
+                                                    }}
+                                                />
+                                            </label>
+                                        </div>
+                                    </div>
+
                                     {/* Custom Video URL Input */}
                                     <div className="pt-1">
-                                        <label className="text-[11px] font-semibold text-white/60 mb-1.5 block">Custom Live Video URL (.mp4 / .webm)</label>
+                                        <label className="text-[11px] font-semibold text-white/60 mb-1.5 block">Or Paste Direct Video URL (.mp4 / .webm)</label>
                                         <div className="flex gap-2">
                                             <input
                                                 type="text"
@@ -264,9 +447,9 @@ const SettingsModal = ({ settingsOpen, setSettingsOpen, config, setConfig }) => 
                                                         setConfig({ ...config, wallpaper: config.customVideo, wallpaperType: 'live' });
                                                     }
                                                 }}
-                                                className="px-3.5 py-1.5 bg-white text-black hover:bg-neutral-200 rounded-xl text-xs font-bold transition-all shrink-0"
+                                                className="px-3.5 py-1.5 bg-white/10 hover:bg-white/20 border border-white/10 text-white rounded-xl text-xs font-bold transition-all shrink-0"
                                             >
-                                                Set Video
+                                                Set URL
                                             </button>
                                         </div>
                                     </div>
